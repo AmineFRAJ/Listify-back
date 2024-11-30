@@ -27,3 +27,6 @@ app.use("/api/lists", require("./routes/listRoutes"));
 
 // Auth routes
 app.use("/api/auth", require("./routes/authRoutes"));
+
+// User routes
+app.use("/api/users", require("./routes/userRoutes"));

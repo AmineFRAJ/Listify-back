@@ -11,6 +11,10 @@ const listSchema = new Schema(
       type: String,
       required: true,
     },
+    isDone: {
+      type: Boolean,
+      default: false,
+    },
     user: [
         {
           type: mongoose.Types.ObjectId,
