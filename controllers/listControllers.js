@@ -11,8 +11,12 @@ exports.test = async (req, res) => {
 //add task
 exports.addTask = async (req, res) => {
   try {
-    const { title, body, email } = req.body;
-    const existingUser = await User.findOne({ email });
+    const { title, body, id } = req.body;
+
+    console.log(id); // Check the user object
+
+    const existingUser = await User.findById(id);
+    console.log(existingUser);
     if (!existingUser) {
       return res.status(404).json({ msg: "User not found" });
     }
@@ -34,22 +38,29 @@ exports.addTask = async (req, res) => {
 //update task
 exports.updateTask = async (req, res) => {
   try {
+    console.log("Request received - Params:", req.params);
+    console.log("Request received - Body:", req.body);
+
     const { id } = req.params;
-    const { title, body, email } = req.body;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      const updateTask = await List.findByIdAndUpdate(
-        id,
-        { title, body },
-        { new: true }
-      );
-      res.status(200).send({ msg: "Task Updated successfully", updateTask });
+    const { title, body, isDone } = req.body;
+
+    const updateTask = await List.findByIdAndUpdate(
+      id,
+      { title, body, isDone },
+      { new: true }
+    );
+
+    if (!updateTask) {
+      return res.status(404).send({ msg: "Task not found" });
     }
+
+    res.status(200).send({ msg: "Task Updated successfully", updateTask });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).send({ errors: [{ msg: "Can not add" }] });
+    console.log("Error in updateTask:", error.message);
+    res.status(500).send({ errors: [{ msg: "Can not update task" }] });
   }
 };
+
 
 //delete
 
@@ -79,8 +90,6 @@ exports.deleteTask = async (req, res) => {
   }
 };
 
- 
-
 //get task
 exports.getTasks = async (req, res) => {
   try {
@@ -91,7 +100,9 @@ exports.getTasks = async (req, res) => {
     }
 
     // Find the tasks for the user and sort them by createdAt in descending order
-    const list = await List.find({ user: req.params.id }).sort({ createdAt: -1 });
+    const list = await List.find({ user: req.params.id }).sort({
+      createdAt: -1,
+    });
 
     // Check if tasks exist for the user
     if (list.length !== 0) {
@@ -104,23 +115,6 @@ exports.getTasks = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // exports.deleteTask = async (req, res) => {
 //   try {
